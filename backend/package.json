@@ -1,0 +1,48 @@
+{
+  "name": "bwms-backend",
+  "version": "1.0.0",
+  "description": "Pasmh Work Management System - Backend API",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/app.js",
+    "start": "node src/app.js",
+    "db:migrate": "knex migrate:latest --knexfile database/knexfile.js",
+    "db:migrate:rollback": "knex migrate:rollback --knexfile database/knexfile.js",
+    "db:seed": "knex seed:run --knexfile database/knexfile.js",
+    "db:reset": "knex migrate:rollback --all --knexfile database/knexfile.js && knex migrate:latest --knexfile database/knexfile.js && knex seed:run --knexfile database/knexfile.js",
+    "setup:users": "node scripts/setup-users.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "argon2": "^0.31.2",
+    "axios": "^1.7.9",
+    "cloudinary": "^2.5.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "multer-storage-cloudinary": "^4.0.0",
+    "mysql2": "^3.11.5",
+    "nodemailer": "^6.9.16",
+    "node-cron": "^3.0.3",
+    "uuid": "^11.0.3",
+    "winston": "^3.17.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.8",
+    "supertest": "^7.0.0",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
