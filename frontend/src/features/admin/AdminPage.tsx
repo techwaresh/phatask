@@ -3,6 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Table, Card, Tag, Typography, Tabs } from 'antd';
 import { apiClient } from '../../api/client';
+import { formatDateTime } from '../../utils/date';
 
 const { Title, Text } = Typography;
 
@@ -57,7 +58,7 @@ export const AdminPage: React.FC = () => {
       title: 'التاريخ والوقت',
       dataIndex: 'created_at',
       key: 'created_at',
-      render: (d: string) => new Date(d).toLocaleString('ar-YE'),
+      render: (d: string) => formatDateTime(d),
     },
   ];
 

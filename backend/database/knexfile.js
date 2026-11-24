@@ -18,6 +18,7 @@ const knexConfig = {
       password: process.env.DB_PASSWORD || '',
       charset: 'utf8mb4',
       timezone: '+00:00',
+      dateStrings: true,
     },
     pool: { min: 2, max: 10 },
     migrations: {

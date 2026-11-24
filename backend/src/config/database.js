@@ -15,6 +15,7 @@ const knexConfig = {
     password: process.env.DB_PASSWORD || '',
     charset: 'utf8mb4',
     timezone: '+00:00',
+    dateStrings: true,
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   },
   pool: {

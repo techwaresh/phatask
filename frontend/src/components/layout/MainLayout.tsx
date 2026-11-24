@@ -32,6 +32,7 @@ import {
 import { useAuthStore } from '../../stores/authStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../../api/client';
+import { formatDateTime } from '../../utils/date';
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
@@ -165,7 +166,12 @@ export const MainLayout: React.FC = () => {
           >
             <List.Item.Meta
               title={<span style={{ fontSize: 13, fontWeight: item.is_read ? 'normal' : 'bold' }}>{item.title}</span>}
-              description={<span style={{ fontSize: 12, color: '#666' }}>{item.body}</span>}
+              description={
+                <div>
+                  <div style={{ fontSize: 12, color: '#666' }}>{item.body}</div>
+                  <div style={{ fontSize: 10, color: '#999', marginTop: 2 }}>{formatDateTime(item.created_at)}</div>
+                </div>
+              }
             />
           </List.Item>
         )}
@@ -220,22 +226,18 @@ export const MainLayout: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div
+            <img
+              src="/logo.png"
+              alt="شعار مؤسسة بصمة"
               style={{
-                width: 34,
-                height: 34,
-                borderRadius: 8,
-                backgroundColor: '#258579',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                fontWeight: 'bold',
-                fontSize: 18,
+                height: 42,
+                maxWidth: collapsed ? 36 : 140,
+                objectFit: 'contain',
+                borderRadius: 6,
+                backgroundColor: '#ffffff',
+                padding: '2px 6px',
               }}
-            >
-              ب
-            </div>
+            />
             {!collapsed && (
               <div>
                 <div style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>منصة بصمة</div>
@@ -257,7 +259,12 @@ export const MainLayout: React.FC = () => {
 
       {/* Mobile Drawer */}
       <Drawer
-        title="نظام إدارة العمل بصمة"
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src="/logo.png" alt="بصمة" style={{ height: 32, borderRadius: 4, backgroundColor: '#fff', padding: 2 }} />
+            <span style={{ color: '#fff' }}>نظام إدارة العمل بصمة</span>
+          </div>
+        }
         placement="right"
         onClose={() => setMobileDrawerOpen(false)}
         open={mobileDrawerOpen}

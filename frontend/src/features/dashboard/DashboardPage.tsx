@@ -28,6 +28,7 @@ import {
 import { useAuthStore } from '../../stores/authStore';
 import { apiClient } from '../../api/client';
 import { useNavigate } from 'react-router-dom';
+import { formatDate, formatDateTime } from '../../utils/date';
 
 const { Title, Text } = Typography;
 
@@ -205,7 +206,7 @@ export const DashboardPage: React.FC = () => {
                       <Text strong>{item.user_name || 'النظام'}</Text>
                       <Tag color="cyan">{item.action}</Tag>
                       <Text type="secondary" style={{ fontSize: 12 }}>
-                        {item.created_at ? new Date(item.created_at).toLocaleString('ar-YE') : ''}
+                        {item.created_at ? formatDateTime(item.created_at) : ''}
                       </Text>
                     </Space>
                   }
@@ -353,7 +354,7 @@ export const DashboardPage: React.FC = () => {
                     <Tag color={activePlan.status === 'approved' ? 'green' : 'orange'}>{activePlan.status}</Tag>
                   </Space>
                   <div style={{ marginTop: 12, color: '#666', fontSize: 13 }}>
-                    الفترة: {activePlan.period_start} إلى {activePlan.period_end}
+                    الفترة: {formatDate(activePlan.period_start, 'readable')} إلى {formatDate(activePlan.period_end, 'readable')}
                   </div>
                 </div>
               ) : (

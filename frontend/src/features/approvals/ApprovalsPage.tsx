@@ -21,6 +21,7 @@ import {
 } from '@ant-design/icons';
 import { apiClient } from '../../api/client';
 import { useNavigate } from 'react-router-dom';
+import { formatDateTime } from '../../utils/date';
 
 const { Title, Text } = Typography;
 
@@ -100,7 +101,7 @@ export const ApprovalsPage: React.FC = () => {
       title: 'تاريخ الإرسال',
       dataIndex: 'created_at',
       key: 'created_at',
-      render: (d: string) => new Date(d).toLocaleString('ar-YE'),
+      render: (d: string) => formatDateTime(d),
     },
     {
       title: 'القرار والإجراء',

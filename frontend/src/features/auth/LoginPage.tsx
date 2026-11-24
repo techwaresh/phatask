@@ -46,23 +46,16 @@ export const LoginPage: React.FC = () => {
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div
+          <img
+            src="/logo.png"
+            alt="شعار مؤسسة بصمة"
             style={{
-              width: 56,
-              height: 56,
-              borderRadius: 12,
-              backgroundColor: '#258579',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-              fontSize: 28,
-              fontWeight: 'bold',
+              height: 75,
+              maxWidth: 220,
+              objectFit: 'contain',
               marginBottom: 12,
             }}
-          >
-            ب
-          </div>
+          />
           <Title level={3} style={{ margin: 0, color: '#173F45' }}>
             نظام إدارة العمل (BWMS)
           </Title>

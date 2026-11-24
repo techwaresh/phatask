@@ -18,7 +18,7 @@ export async function seed(knex) {
     },
     {
       key: 'org_name_en',
-      value: 'Basmah Humanitarian Organization',
+      value: 'Pasmh Humanitarian Organization(PHA)',
       description: 'اسم المؤسسة بالإنجليزية',
     },
     {

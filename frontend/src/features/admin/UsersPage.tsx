@@ -3,6 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Table, Card, Tag, Typography, Space } from 'antd';
 import { apiClient } from '../../api/client';
+import { formatDateTime } from '../../utils/date';
 
 const { Title, Text } = Typography;
 
@@ -68,7 +69,7 @@ export const UsersPage: React.FC = () => {
       title: 'آخر تسجيل دخول',
       dataIndex: 'last_login_at',
       key: 'last_login_at',
-      render: (d: string) => (d ? new Date(d).toLocaleString('ar-YE') : 'لم يسجل دخول بعد'),
+      render: (d: string) => (d ? formatDateTime(d) : 'لم يسجل دخول بعد'),
     },
   ];
 

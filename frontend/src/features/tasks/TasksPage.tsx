@@ -30,6 +30,7 @@ import {
 } from '@ant-design/icons';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../stores/authStore';
+import { formatDate, formatDateTime } from '../../utils/date';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -211,6 +212,7 @@ export const TasksPage: React.FC = () => {
       title: 'موعد التسليم',
       dataIndex: 'due_date',
       key: 'due_date',
+      render: (d: string) => formatDate(d, 'readable'),
     },
     {
       title: 'نسبة الإنجاز',
@@ -343,7 +345,7 @@ export const TasksPage: React.FC = () => {
               </Space>
               <div style={{ marginTop: 8, color: '#666', fontSize: 13 }}>
                 المكلف: <Text strong>{selectedTask.assigned_to_name}</Text> | موعد التسليم:{' '}
-                <Text strong>{selectedTask.due_date}</Text>
+                <Text strong>{formatDate(selectedTask.due_date, 'readable')}</Text>
               </div>
             </div>
 
@@ -440,7 +442,7 @@ export const TasksPage: React.FC = () => {
                       <Space>
                         <Text strong>{c.user_name}</Text>
                         <Text type="secondary" style={{ fontSize: 11 }}>
-                          {new Date(c.created_at).toLocaleString('ar-YE')}
+                          {formatDateTime(c.created_at)}
                         </Text>
                       </Space>
                     }

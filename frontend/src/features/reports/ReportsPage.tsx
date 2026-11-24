@@ -29,6 +29,7 @@ import {
 } from '@ant-design/icons';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../stores/authStore';
+import { formatDate, formatDateTime } from '../../utils/date';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -205,7 +206,7 @@ export const ReportsPage: React.FC = () => {
       key: 'period',
       render: (_: any, record: any) => (
         <span>
-          {record.period_start} إلى {record.period_end}
+          {formatDate(record.period_start, 'readable')} إلى {formatDate(record.period_end, 'readable')}
         </span>
       ),
     },
@@ -398,13 +399,20 @@ export const ReportsPage: React.FC = () => {
                 marginBottom: 16,
               }}
             >
+              <img
+                src="/logo.png"
+                alt="شعار مؤسسة بصمة"
+                style={{ height: 65, objectFit: 'contain', marginBottom: 8 }}
+              />
               <Title level={4} style={{ margin: 0, color: '#173F45' }}>
                 مؤسسة بصمة للأعمال الإنسانية
               </Title>
-              <Text strong>{selectedReport.title}</Text>
-              <div style={{ marginTop: 4, color: '#666', fontSize: 12 }}>
+              <Text strong style={{ fontSize: 16, display: 'block', marginTop: 4 }}>
+                {selectedReport.title}
+              </Text>
+              <div style={{ marginTop: 4, color: '#666', fontSize: 13 }}>
                 الموظف: {selectedReport.user_name} | القسم: {selectedReport.department_name || '—'} |
-                الفترة: {selectedReport.period_start} إلى {selectedReport.period_end}
+                الفترة: {formatDate(selectedReport.period_start, 'readable')} إلى {formatDate(selectedReport.period_end, 'readable')}
               </div>
             </div>
 
@@ -472,7 +480,7 @@ export const ReportsPage: React.FC = () => {
                     {step.notes && <div style={{ color: '#555', fontSize: 13 }}>{step.notes}</div>}
                     {step.acted_at && (
                       <div style={{ fontSize: 11, color: '#999' }}>
-                        {new Date(step.acted_at).toLocaleString('ar-YE')}
+                        {formatDateTime(step.acted_at)}
                       </div>
                     )}
                   </div>

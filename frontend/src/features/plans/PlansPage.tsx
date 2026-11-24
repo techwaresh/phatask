@@ -27,6 +27,7 @@ import {
 } from '@ant-design/icons';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../stores/authStore';
+import { formatDate, formatDateTime } from '../../utils/date';
 import dayjs from 'dayjs';
 
 const { Title, Text, Paragraph } = Typography;
@@ -192,7 +193,7 @@ export const PlansPage: React.FC = () => {
       key: 'period',
       render: (_: any, record: any) => (
         <span>
-          {record.period_start} إلى {record.period_end}
+          {formatDate(record.period_start, 'readable')} إلى {formatDate(record.period_end, 'readable')}
         </span>
       ),
     },
@@ -442,7 +443,7 @@ export const PlansPage: React.FC = () => {
                 {getStatusTag(selectedPlan.status)}
               </Space>
               <Text type="secondary">
-                الفترة: {selectedPlan.period_start} إلى {selectedPlan.period_end}
+                الفترة: {formatDate(selectedPlan.period_start, 'readable')} إلى {formatDate(selectedPlan.period_end, 'readable')}
               </Text>
             </div>
 
@@ -501,7 +502,7 @@ export const PlansPage: React.FC = () => {
                     {step.notes && <div style={{ color: '#555', fontSize: 13 }}>{step.notes}</div>}
                     {step.acted_at && (
                       <div style={{ fontSize: 11, color: '#999' }}>
-                        {new Date(step.acted_at).toLocaleString('ar-YE')}
+                        {formatDateTime(step.acted_at)}
                       </div>
                     )}
                   </div>
