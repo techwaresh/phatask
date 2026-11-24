@@ -337,53 +337,53 @@ export const ReportsPage: React.FC = () => {
             طباعة / تصدير PDF
           </Button>,
           selectedReport?.user_id === user?.id &&
-            (selectedReport?.status === 'draft' || selectedReport?.status === 'revision_requested') && (
-              <Button
-                key="submit"
-                type="primary"
-                style={{ backgroundColor: '#258579' }}
-                onClick={() => submitReportMutation.mutate(selectedReport.id)}
-              >
-                إرسال للمراجعة والاعتماد
-              </Button>
-            ),
+          (selectedReport?.status === 'draft' || selectedReport?.status === 'revision_requested') && (
+            <Button
+              key="submit"
+              type="primary"
+              style={{ backgroundColor: '#258579' }}
+              onClick={() => submitReportMutation.mutate(selectedReport.id)}
+            >
+              إرسال للمراجعة والاعتماد
+            </Button>
+          ),
           selectedReport?.status === 'under_review' &&
-            selectedReport?.user_id !== user?.id &&
-            (isExecutive || isManager) && (
-              <Space key="approvals">
-                <Button
-                  danger
-                  icon={<CloseCircleOutlined />}
-                  onClick={() => {
-                    setActionType('reject');
-                    setActionModalOpen(true);
-                  }}
-                >
-                  رفض
-                </Button>
-                <Button
-                  style={{ color: '#ed6c02', borderColor: '#ed6c02' }}
-                  icon={<RollbackOutlined />}
-                  onClick={() => {
-                    setActionType('request_revision');
-                    setActionModalOpen(true);
-                  }}
-                >
-                  إعادة للتعديل
-                </Button>
-                <Button
-                  type="primary"
-                  icon={<CheckCircleOutlined />}
-                  style={{ backgroundColor: '#2e7d32' }}
-                  onClick={() => {
-                    setActionType('approve');
-                    setActionModalOpen(true);
-                  }}
-                >
-                  اعتماد
-                </Button>
-              </Space>
-            ),
+          selectedReport?.user_id !== user?.id &&
+          (isExecutive || isManager) && (
+            <Space key="approvals">
+              <Button
+                danger
+                icon={<CloseCircleOutlined />}
+                onClick={() => {
+                  setActionType('reject');
+                  setActionModalOpen(true);
+                }}
+              >
+                رفض
+              </Button>
+              <Button
+                style={{ color: '#ed6c02', borderColor: '#ed6c02' }}
+                icon={<RollbackOutlined />}
+                onClick={() => {
+                  setActionType('request_revision');
+                  setActionModalOpen(true);
+                }}
+              >
+                إعادة للتعديل
+              </Button>
+              <Button
+                type="primary"
+                icon={<CheckCircleOutlined />}
+                style={{ backgroundColor: '#2e7d32' }}
+                onClick={() => {
+                  setActionType('approve');
+                  setActionModalOpen(true);
+                }}
+              >
+                اعتماد
+              </Button>
+            </Space>
+          ),
           <Button key="close" onClick={() => setDetailsModalOpen(false)}>
             إغلاق
           </Button>,
@@ -468,10 +468,10 @@ export const ReportsPage: React.FC = () => {
                   step.status === 'approved'
                     ? 'green'
                     : step.status === 'rejected'
-                    ? 'red'
-                    : step.status === 'revision_requested'
-                    ? 'orange'
-                    : 'blue',
+                      ? 'red'
+                      : step.status === 'revision_requested'
+                        ? 'orange'
+                        : 'blue',
                 children: (
                   <div>
                     <Text strong>
@@ -497,8 +497,8 @@ export const ReportsPage: React.FC = () => {
           actionType === 'approve'
             ? 'تأكيد اعتماد التقرير'
             : actionType === 'reject'
-            ? 'رفض التقرير'
-            : 'إعادة التقرير للتعديل'
+              ? 'رفض التقرير'
+              : 'إعادة التقرير للتعديل'
         }
         open={actionModalOpen}
         onCancel={() => setActionModalOpen(false)}
@@ -540,8 +540,8 @@ export const ReportsPage: React.FC = () => {
                     actionType === 'approve'
                       ? '#2e7d32'
                       : actionType === 'reject'
-                      ? '#d32f2f'
-                      : '#ed6c02',
+                        ? '#d32f2f'
+                        : '#ed6c02',
                 }}
               >
                 تأكيد الإجراء

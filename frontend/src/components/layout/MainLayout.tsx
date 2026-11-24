@@ -24,6 +24,7 @@ import {
   ApartmentOutlined,
   SettingOutlined,
   BellOutlined,
+  CheckOutlined,
   UserOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
@@ -40,6 +41,7 @@ const { Text } = Typography;
 export const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -81,6 +83,27 @@ export const MainLayout: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['recent-notifications'] });
     },
   });
+
+  const markAsReadMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiClient.put(`/notifications/${id}/read`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['unread-notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['recent-notifications'] });
+    },
+  });
+
+  const handleNotificationClick = (item: any) => {
+    if (!item.is_read) {
+      markAsReadMutation.mutate(item.id);
+    }
+    setNotificationOpen(false);
+    if (item.related_entity_type === 'plan') navigate('/plans');
+    else if (item.related_entity_type === 'task') navigate('/tasks');
+    else if (item.related_entity_type === 'report') navigate('/reports');
+    else if (item.related_entity_type === 'approval') navigate('/approvals');
+  };
 
   const menuItems = [
     {
@@ -139,37 +162,69 @@ export const MainLayout: React.FC = () => {
   };
 
   const notificationMenu = (
-    <div style={{ width: 320, padding: 12, backgroundColor: '#fff', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+    <div style={{ width: 340, padding: 12, backgroundColor: '#fff', borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <Text strong>الإشعارات</Text>
-        <Button type="link" size="small" onClick={() => markAllReadMutation.mutate()}>
+        <Text strong style={{ fontSize: 14 }}>الإشعارات</Text>
+        <Button
+          type="link"
+          size="small"
+          loading={markAllReadMutation.isPending}
+          onClick={() => markAllReadMutation.mutate()}
+        >
           تعليم الكل كمقروء
         </Button>
       </div>
-      <Divider style={{ margin: '4px 0' }} />
+      <Divider style={{ margin: '4px 0 8px 0' }} />
       <List
         size="small"
         dataSource={notificationsData || []}
-        locale={{ emptyText: 'لا توجد إشعارات جديدة' }}
+        locale={{ emptyText: 'لا توجد إشعارات حالياً' }}
         renderItem={(item: any) => (
           <List.Item
             style={{
-              padding: '8px 4px',
+              padding: '8px 10px',
               backgroundColor: item.is_read ? 'transparent' : '#f0f9f8',
+              borderRadius: 6,
+              marginBottom: 4,
               cursor: 'pointer',
+              borderRight: item.is_read ? '3px solid transparent' : '3px solid #258579',
+              transition: 'all 0.2s ease',
             }}
-            onClick={() => {
-              if (item.related_entity_type === 'plan') navigate('/plans');
-              if (item.related_entity_type === 'task') navigate('/tasks');
-              if (item.related_entity_type === 'report') navigate('/reports');
-            }}
+            onClick={() => handleNotificationClick(item)}
+            actions={
+              !item.is_read
+                ? [
+                    <Button
+                      key="mark-read"
+                      type="text"
+                      size="small"
+                      title="تعليم كمقروء"
+                      icon={<CheckOutlined style={{ color: '#258579', fontSize: 13 }} />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        markAsReadMutation.mutate(item.id);
+                      }}
+                    />,
+                  ]
+                : []
+            }
           >
             <List.Item.Meta
-              title={<span style={{ fontSize: 13, fontWeight: item.is_read ? 'normal' : 'bold' }}>{item.title}</span>}
+              title={
+                <span
+                  style={{
+                    fontSize: 13,
+                    fontWeight: item.is_read ? 'normal' : 600,
+                    color: item.is_read ? '#555' : '#173F45',
+                  }}
+                >
+                  {item.title}
+                </span>
+              }
               description={
                 <div>
-                  <div style={{ fontSize: 12, color: '#666' }}>{item.body}</div>
-                  <div style={{ fontSize: 10, color: '#999', marginTop: 2 }}>{formatDateTime(item.created_at)}</div>
+                  <div style={{ fontSize: 12, color: '#666', marginTop: 2 }}>{item.body}</div>
+                  <div style={{ fontSize: 10, color: '#999', marginTop: 4 }}>{formatDateTime(item.created_at)}</div>
                 </div>
               }
             />
@@ -313,7 +368,13 @@ export const MainLayout: React.FC = () => {
 
           <Space direction="horizontal" size="middle">
             {/* Notification Bell */}
-            <Dropdown dropdownRender={() => notificationMenu} trigger={['click']} placement="bottomLeft">
+            <Dropdown
+              open={notificationOpen}
+              onOpenChange={setNotificationOpen}
+              dropdownRender={() => notificationMenu}
+              trigger={['click']}
+              placement="bottomLeft"
+            >
               <Badge count={unreadData || 0} size="small" offset={[-4, 4]}>
                 <Button
                   shape="circle"
