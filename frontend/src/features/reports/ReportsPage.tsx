@@ -390,7 +390,7 @@ export const ReportsPage: React.FC = () => {
         ]}
       >
         {selectedReport && (
-          <div orientation="vertical" style={{ width: '100%' }} ref={printRef}>
+          <div style={{ width: '100%' }} ref={printRef}>
             <div
               style={{
                 textAlign: 'center',

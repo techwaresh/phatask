@@ -105,12 +105,12 @@ export const MainLayout: React.FC = () => {
     },
     ...(isExecutive || isManager
       ? [
-          {
-            key: '/approvals',
-            icon: <AuditOutlined />,
-            label: 'الاعتمادات',
-          },
-        ]
+        {
+          key: '/approvals',
+          icon: <AuditOutlined />,
+          label: 'الاعتمادات',
+        },
+      ]
       : []),
     {
       key: '/departments',
@@ -119,17 +119,17 @@ export const MainLayout: React.FC = () => {
     },
     ...(isExecutive
       ? [
-          {
-            key: '/users',
-            icon: <TeamOutlined />,
-            label: 'المستخدمون',
-          },
-          {
-            key: '/admin',
-            icon: <SettingOutlined />,
-            label: 'إدارة النظام',
-          },
-        ]
+        {
+          key: '/users',
+          icon: <TeamOutlined />,
+          label: 'المستخدمون',
+        },
+        {
+          key: '/admin',
+          icon: <SettingOutlined />,
+          label: 'إدارة النظام',
+        },
+      ]
       : []),
   ];
 
@@ -311,7 +311,7 @@ export const MainLayout: React.FC = () => {
             </Text>
           </Space>
 
-          <Space orientation="horizontal" size="middle">
+          <Space direction="horizontal" size="middle">
             {/* Notification Bell */}
             <Dropdown dropdownRender={() => notificationMenu} trigger={['click']} placement="bottomLeft">
               <Badge count={unreadData || 0} size="small" offset={[-4, 4]}>
