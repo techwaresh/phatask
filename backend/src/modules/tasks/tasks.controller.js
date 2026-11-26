@@ -1,5 +1,6 @@
 // src/modules/tasks/tasks.controller.js
 import { TasksService } from './tasks.service.js';
+import { TasksExcelService } from './tasks-excel.service.js';
 
 export class TasksController {
   static async list(req, res, next) {
@@ -77,6 +78,47 @@ export class TasksController {
         success: true,
         data: comment,
         message: 'تمت إضافة التعليق بنجاح',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async downloadTemplate(req, res, next) {
+    try {
+      const workbook = await TasksExcelService.generateTemplateWorkbook();
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename="tasks_import_template.xlsx"'
+      );
+      await workbook.xlsx.write(res);
+      res.end();
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async importTasks(req, res, next) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'FILE_REQUIRED',
+            message: 'يرجى إرفاق ملف إكسل بصيغة .xlsx للاستيراد',
+          },
+        });
+      }
+
+      const result = await TasksExcelService.importTasksFromExcel(req.user, req.file.buffer);
+      res.status(201).json({
+        success: true,
+        data: result,
+        message: `تم استيراد ${result.importedCount} مهمة بنجاح${result.failedCount > 0 ? `، وتعذر استيراد ${result.failedCount} صف` : ''}`,
       });
     } catch (error) {
       next(error);

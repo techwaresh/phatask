@@ -20,6 +20,8 @@ import {
   List,
   Avatar,
   Divider,
+  Upload,
+  Alert,
 } from 'antd';
 import {
   PlusOutlined,
@@ -27,6 +29,9 @@ import {
   CloseOutlined,
   SendOutlined,
   UserOutlined,
+  FileExcelOutlined,
+  UploadOutlined,
+  DownloadOutlined,
 } from '@ant-design/icons';
 import { apiClient } from '../../api/client';
 import { useAuthStore } from '../../stores/authStore';
@@ -36,6 +41,12 @@ const { Title, Text, Paragraph } = Typography;
 
 export const TasksPage: React.FC = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [downloadingTemplate, setDownloadingTemplate] = useState(false);
+  const [importResult, setImportResult] = useState<any>(null);
+
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [progressVal, setProgressVal] = useState<number>(0);
@@ -71,6 +82,55 @@ export const TasksPage: React.FC = () => {
     },
     enabled: isExecutive || isManager,
   });
+
+  // تحميل نموذج الإكسل الفارغ
+  const handleDownloadTemplate = async () => {
+    try {
+      setDownloadingTemplate(true);
+      const res = await apiClient.get('/tasks/template', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'نموذج_استيراد_المهام_بصمة.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      message.success('تم تحميل نموذج الإكسل بنجاح');
+    } catch (err) {
+      message.error('فشل تحميل نموذج الإكسل');
+    } finally {
+      setDownloadingTemplate(false);
+    }
+  };
+
+  // استيراد المهام من ملف الإكسل
+  const handleImportTasks = async () => {
+    if (fileList.length === 0) {
+      message.warning('يرجى اختيار ملف الإكسل أولاً');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', fileList[0]);
+
+    try {
+      setUploading(true);
+      const res = await apiClient.post('/tasks/import', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setImportResult(res.data.data);
+      queryClient.invalidateQueries({ queryKey: ['tasks-list'] });
+      message.success(res.data.message || 'تم استيراد المهام بنجاح');
+    } catch (err: any) {
+      const errMsg =
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        'فشل استيراد المهام من الملف';
+      message.error(errMsg);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   // إنشاء مهمة
   const createTaskMutation = useMutation({
@@ -233,18 +293,43 @@ export const TasksPage: React.FC = () => {
   return (
     <Card
       title={
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <Title level={4} style={{ margin: 0, color: '#173F45' }}>
             إدارة ومتابعة المهام
           </Title>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            style={{ backgroundColor: '#258579' }}
-            onClick={() => setCreateModalOpen(true)}
-          >
-            مهمة جديدة
-          </Button>
+          <Space wrap>
+            {isExecutive && (
+              <>
+                <Button
+                  icon={<DownloadOutlined />}
+                  loading={downloadingTemplate}
+                  onClick={handleDownloadTemplate}
+                  title="تحميل ملف إكسل فارغ مع دليل أرقام الموظفين"
+                >
+                  تحميل نموذج Excel
+                </Button>
+                <Button
+                  icon={<UploadOutlined />}
+                  style={{ borderColor: '#258579', color: '#258579' }}
+                  onClick={() => {
+                    setImportResult(null);
+                    setFileList([]);
+                    setImportModalOpen(true);
+                  }}
+                >
+                  استيراد مهام من Excel
+                </Button>
+              </>
+            )}
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              style={{ backgroundColor: '#258579' }}
+              onClick={() => setCreateModalOpen(true)}
+            >
+              مهمة جديدة
+            </Button>
+          </Space>
         </div>
       }
       bordered={false}
@@ -327,6 +412,146 @@ export const TasksPage: React.FC = () => {
             </Space>
           </div>
         </Form>
+      </Modal>
+
+      {/* مودال استيراد المهام بالجملة من إكسل */}
+      <Modal
+        title={
+          <Space>
+            <FileExcelOutlined style={{ color: '#258579', fontSize: 20 }} />
+            <span>استيراد مهام جماعية من ملف Excel</span>
+          </Space>
+        }
+        open={importModalOpen}
+        onCancel={() => {
+          if (!uploading) {
+            setImportModalOpen(false);
+            setImportResult(null);
+            setFileList([]);
+          }
+        }}
+        footer={[
+          <Button
+            key="close"
+            onClick={() => {
+              setImportModalOpen(false);
+              setImportResult(null);
+              setFileList([]);
+            }}
+            disabled={uploading}
+          >
+            {importResult ? 'إغلاق' : 'إلغاء'}
+          </Button>,
+          <Button
+            key="import-btn"
+            type="primary"
+            loading={uploading}
+            disabled={fileList.length === 0}
+            style={{ backgroundColor: '#258579' }}
+            onClick={handleImportTasks}
+          >
+            بدء الاستيراد
+          </Button>,
+        ]}
+        width={650}
+        destroyOnClose
+      >
+        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+          <Alert
+            type="info"
+            showIcon
+            message="تعليمات استيراد المهام"
+            description={
+              <div style={{ fontSize: 13, lineHeight: 1.6 }}>
+                <div>1. قم بتحميل النموذج الفارغ، ويحتوي على ورقة "دليل أرقام الموظفين" لمعرفة أرقام المعرفات لكل موظف.</div>
+                <div>2. اكتب رقم الموظف في العمود الأول، وسيتم إسناد المهمة له تلقائياً وتحديد قسمه.</div>
+                <div>3. املأ عنوان المهمة، وتاريخ التسليم (YYYY-MM-DD)، والأولوية (منخفضة / متوسطة / عالية / طارئة).</div>
+                <div style={{ marginTop: 8 }}>
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<DownloadOutlined />}
+                    onClick={handleDownloadTemplate}
+                    loading={downloadingTemplate}
+                    style={{ padding: 0 }}
+                  >
+                    اضغط هنا لتحميل نموذج Excel الفارغ المعتمد
+                  </Button>
+                </div>
+              </div>
+            }
+          />
+
+          <Upload.Dragger
+            accept=".xlsx,.xls"
+            maxCount={1}
+            fileList={fileList}
+            beforeUpload={(file) => {
+              const isExcel =
+                file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+                file.type === 'application/vnd.ms-excel' ||
+                file.name.endsWith('.xlsx') ||
+                file.name.endsWith('.xls');
+              if (!isExcel) {
+                message.error('يرجى اختيار ملف Excel بصيغة .xlsx فقط');
+                return Upload.LIST_IGNORE;
+              }
+              const isLt10M = file.size / 1024 / 1024 < 10;
+              if (!isLt10M) {
+                message.error('الحد الأقصى لحجم الملف هو 10 ميجابايت');
+                return Upload.LIST_IGNORE;
+              }
+              setFileList([file]);
+              setImportResult(null);
+              return false;
+            }}
+            onRemove={() => {
+              setFileList([]);
+              setImportResult(null);
+            }}
+          >
+            <p className="ant-upload-drag-icon">
+              <FileExcelOutlined style={{ fontSize: 42, color: '#258579' }} />
+            </p>
+            <p className="ant-upload-text" style={{ fontSize: 15, fontWeight: 600 }}>
+              انقر أو اسحب ملف Excel (.xlsx) هنا لرفعه
+            </p>
+            <p className="ant-upload-hint" style={{ color: '#888' }}>
+              يدعم ملفات .xlsx حتى 10 ميجابايت مع التنسيق العربي
+            </p>
+          </Upload.Dragger>
+
+          {importResult && (
+            <div style={{ marginTop: 12 }}>
+              {importResult.importedCount > 0 && (
+                <Alert
+                  type="success"
+                  showIcon
+                  message={`تم بنجاح استيراد ${importResult.importedCount} مهمة وتوزيعها على الموظفين المعنيين.`}
+                  style={{ marginBottom: 8 }}
+                />
+              )}
+              {importResult.failedCount > 0 && (
+                <Alert
+                  type="warning"
+                  showIcon
+                  message={`تعذر استيراد ${importResult.failedCount} صف:`}
+                  description={
+                    <List
+                      size="small"
+                      dataSource={importResult.errors}
+                      renderItem={(err: any) => (
+                        <List.Item style={{ padding: '4px 0', color: '#cf1322' }}>
+                          • الصف {err.row}: {err.reason}
+                        </List.Item>
+                      )}
+                    />
+                  }
+                />
+              )}
+            </div>
+          )}
+        </Space>
       </Modal>
 
       {/* Drawer تفاصيل المهمة وتحديثها */}
