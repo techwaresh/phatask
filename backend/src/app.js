@@ -22,6 +22,7 @@ import notificationRoutes from './modules/notifications/notifications.routes.js'
 import dashboardRoutes from './modules/dashboard/dashboard.routes.js';
 import adminRoutes from './modules/admin/admin.routes.js';
 import fileRoutes from './modules/files/files.routes.js';
+import projectRoutes from './modules/projects/projects.routes.js';
 import { initCronJobs } from './jobs/cron.js';
 
 const app = express();
@@ -102,6 +103,7 @@ app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/files', fileRoutes);
+app.use('/api/v1/projects', projectRoutes);
 
 // ─── Error Handling ───────────────────────────────────────────────────────────
 app.use(notFoundHandler);

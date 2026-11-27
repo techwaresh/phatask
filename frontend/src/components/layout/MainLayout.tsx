@@ -22,6 +22,7 @@ import {
   AuditOutlined,
   TeamOutlined,
   ApartmentOutlined,
+  ProjectOutlined,
   SettingOutlined,
   BellOutlined,
   CheckOutlined,
@@ -99,7 +100,8 @@ export const MainLayout: React.FC = () => {
       markAsReadMutation.mutate(item.id);
     }
     setNotificationOpen(false);
-    if (item.related_entity_type === 'plan') navigate('/plans');
+    if (item.related_entity_type === 'project') navigate('/projects');
+    else if (item.related_entity_type === 'plan') navigate('/plans');
     else if (item.related_entity_type === 'task') navigate('/tasks');
     else if (item.related_entity_type === 'report') navigate('/reports');
     else if (item.related_entity_type === 'approval') navigate('/approvals');
@@ -110,6 +112,11 @@ export const MainLayout: React.FC = () => {
       key: '/dashboard',
       icon: <DashboardOutlined />,
       label: 'لوحة التحكم',
+    },
+    {
+      key: '/projects',
+      icon: <ProjectOutlined />,
+      label: 'المشاريع',
     },
     {
       key: '/plans',

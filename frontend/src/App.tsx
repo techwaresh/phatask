@@ -10,6 +10,7 @@ import { TasksPage } from './features/tasks/TasksPage';
 import { ReportsPage } from './features/reports/ReportsPage';
 import { ApprovalsPage } from './features/approvals/ApprovalsPage';
 import { DepartmentsPage } from './features/departments/DepartmentsPage';
+import { ProjectsPage } from './features/projects/ProjectsPage';
 import { UsersPage } from './features/admin/UsersPage';
 import { AdminPage } from './features/admin/AdminPage';
 
@@ -61,6 +62,7 @@ export default function App() {
       >
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="projects" element={<ProjectsPage />} />
         <Route path="plans" element={<PlansPage />} />
         <Route path="tasks" element={<TasksPage />} />
         <Route path="reports" element={<ReportsPage />} />
